@@ -46,7 +46,7 @@
 			//addChild 要比 renderModal 先呼叫
 			so.addChild("視角可以移動及放大", 2, true);
 			so.addChild("在畫面上畫出左眼的邊框", 2, true);
-			so.addChild("複製左眼邊框變化到右眼", 2, false);
+			so.addChild("複製左眼邊框變化到右眼", 2, true);
 			so.addChild("可選擇當前讀取角色或按鍵選擇上 / 下一隻角色", 1, false);
 			so.addChild("可儲存座標點檔案", 1, false);
 			so.addChild("回答問題", 2, true);
@@ -93,6 +93,9 @@
 
 		var temp = 0;
 
+		var data = [0,0, 0,0, 0,0, 0,0,
+					0,0, 0,0, 0,0, 0,0];
+
 		const vpds = [];
 
 		Ammo().then(function (AmmoLib) {
@@ -120,13 +123,20 @@
 			mouseWorld.unproject(camera);
 			
 			document.onclick = function(){
+				//alert(mouseWorld.x + ' , ' + mouseWorld.y);
+				
 				const points = [];
 				if (temp == 1){
 					const material = new THREE.LineBasicMaterial({
 						color: 0xff0000
 					});
-					points.push( new THREE.Vector3( mouseWorld.x - 1, mouseWorld.y, 20 ) );
-					points.push( new THREE.Vector3( mouseWorld.x + 1, mouseWorld.y, 20 ) );
+					data[0] = new THREE.Vector3( mouseWorld.x - 1, mouseWorld.y, 20 );
+					data[1] = new THREE.Vector3( mouseWorld.x + 1, mouseWorld.y, 20 );
+					data[8] = new THREE.Vector3( -mouseWorld.x - 1, mouseWorld.y, 20 );
+					data[9] = new THREE.Vector3( -mouseWorld.x + 1, mouseWorld.y, 20 );
+					
+					points.push( data[0] );
+					points.push( data[1] );
 					
 					const geometry = new THREE.BufferGeometry().setFromPoints( points );
 
@@ -141,8 +151,13 @@
 					const material = new THREE.LineBasicMaterial({
 						color: 0x00ff00
 					});
-					points.push( new THREE.Vector3( mouseWorld.x, mouseWorld.y - 1, 20 ) );
-					points.push( new THREE.Vector3( mouseWorld.x, mouseWorld.y + 1, 20 ) );
+					data[2] = new THREE.Vector3( mouseWorld.x, mouseWorld.y - 1, 20 );
+					data[3] = new THREE.Vector3( mouseWorld.x, mouseWorld.y + 1, 20 );
+					data[10] = new THREE.Vector3( -mouseWorld.x, mouseWorld.y - 1, 20 );
+					data[11] = new THREE.Vector3( -mouseWorld.x, mouseWorld.y + 1, 20 );
+
+					points.push( data[2] );
+					points.push( data[3] );
 					
 					const geometry = new THREE.BufferGeometry().setFromPoints( points );
 
@@ -157,8 +172,13 @@
 					const material = new THREE.LineBasicMaterial({
 						color: 0xff0000
 					});
-					points.push( new THREE.Vector3( mouseWorld.x - 1, mouseWorld.y, 20 ) );
-					points.push( new THREE.Vector3( mouseWorld.x + 1, mouseWorld.y, 20 ) );
+					data[4] = new THREE.Vector3( mouseWorld.x - 1, mouseWorld.y, 20 );
+					data[5] = new THREE.Vector3( mouseWorld.x + 1, mouseWorld.y, 20 );
+					data[12] = new THREE.Vector3( -mouseWorld.x - 1, mouseWorld.y, 20 );
+					data[13] = new THREE.Vector3( -mouseWorld.x + 1, mouseWorld.y, 20 );
+
+					points.push( data[4] );
+					points.push( data[5] );
 					
 					const geometry = new THREE.BufferGeometry().setFromPoints( points );
 
@@ -173,8 +193,13 @@
 					const material = new THREE.LineBasicMaterial({
 						color: 0x00ff00
 					});
-					points.push( new THREE.Vector3( mouseWorld.x, mouseWorld.y - 1, 20 ) );
-					points.push( new THREE.Vector3( mouseWorld.x, mouseWorld.y + 1, 20 ) );
+					data[6] = new THREE.Vector3( mouseWorld.x, mouseWorld.y - 1, 20 );
+					data[7] = new THREE.Vector3( mouseWorld.x, mouseWorld.y + 1, 20 );
+					data[14] = new THREE.Vector3( -mouseWorld.x, mouseWorld.y - 1, 20 );
+					data[15] = new THREE.Vector3( -mouseWorld.x, mouseWorld.y + 1, 20 );
+
+					points.push( data[6] );
+					points.push( data[7] );
 					
 					const geometry = new THREE.BufferGeometry().setFromPoints( points );
 
@@ -203,7 +228,60 @@
 				temp = 3;
 			} else if (keyCode == 52){
 				temp = 4;
-			} 
+			} else if (keyCode == 81){
+				for (let i = 0; i < 4; i++) {
+					if (i == 0){
+						const material = new THREE.LineBasicMaterial({
+							color: 0xcc00cc
+						});
+
+						const geometry = new THREE.BufferGeometry().setFromPoints( [ data[8], data[9] ] );
+
+						const line = new THREE.Line( geometry, material );
+						line.name = "Rbutton";
+
+						scene.remove( scene.getObjectByName("Rbutton") );
+
+						scene.add( line );
+					} else if (i == 1){
+						const material = new THREE.LineBasicMaterial({
+							color: 0x0080ff
+						});
+						const geometry = new THREE.BufferGeometry().setFromPoints( [ data[10], data[11] ] );
+
+						const line = new THREE.Line( geometry, material );
+						line.name = "Rleft";
+
+						scene.remove( scene.getObjectByName("Rleft") );
+
+						scene.add( line );
+					} else if (i == 2){
+						const material = new THREE.LineBasicMaterial({
+							color: 0xcc00cc
+						});
+						const geometry = new THREE.BufferGeometry().setFromPoints( [ data[12], data[13] ] );
+
+						const line = new THREE.Line( geometry, material );
+						line.name = "Rtop";
+
+						scene.remove( scene.getObjectByName("Rtop") );
+
+						scene.add( line );
+					} else if (i == 3){
+						const material = new THREE.LineBasicMaterial({
+							color: 0x0080ff
+						});
+						const geometry = new THREE.BufferGeometry().setFromPoints( [ data[14], data[15] ] );
+
+						const line = new THREE.Line( geometry, material );
+						line.name = "Rright";
+
+						scene.remove( scene.getObjectByName("Rright") );
+
+						scene.add( line );
+					}
+				}
+			}
 		}
 
 		document.body.addEventListener('mousemove', getPostition, false);
